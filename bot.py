@@ -7,8 +7,9 @@ import pytz
 logging.basicConfig(filename='bot.log', level=logging.INFO)
 
 def greet_user(update, context):
-    print('Вызван /start')
-    update.message.reply_text('Привет, пользователь! Ты вызвал команду /start')
+    user_name = update.message.from_user.username
+    print(f'{user_name} вызвал /start')
+    update.message.reply_text(f'Привет, {user_name} ! Ты вызвал команду /start')
 
 def talk_to_me(update, context):
     user_text= update.message.text
@@ -24,11 +25,14 @@ def tell_the_time(update, context):
     update.message.reply_text(f'My time is {_time.strftime("%H:%M:%S")}')
     update.message.reply_text(f'Moscow time is {moscow_time.strftime("%H:%M:%S")}')
 
+
+
 def main():
     mybot = Updater(settings.API_KEY, use_context=True)
-    dp = mybot.dispatcher
+    dp = mybot.dispatcher   
     dp.add_handler(CommandHandler("start",greet_user))
     dp.add_handler(CommandHandler("time",tell_the_time))
+    dp.add_handler(CommandHandler('exit', quit()))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     logging.info("Бот стратовал")
     mybot.start_polling()
