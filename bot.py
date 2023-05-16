@@ -2,7 +2,7 @@ import logging
 import settings
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from datetime import datetime
-import pytz, os
+import pytz, os, ephem
 
 logging.basicConfig(filename='bot.log', level=logging.INFO)
 
@@ -38,12 +38,43 @@ def stopping(update, context):
     update.message.reply_text(user_name + ' меня выключил' )
     return stop_bot(update, context)
 
+def astro_bot(update, context):
+    today = ephem.now()
+    p_s = ['mars' , 'earth', 'mercury', 'venus', 'jupiter', 'saturn', 'uranus', 'neptune']
+    mars = ephem.Mars(today)
+    venus = ephem.Venus(today)
+    jupiter = ephem.Jupiter(today)
+    mercury = ephem.Mercury(today)
+    saturn = ephem.Saturn(today)
+    uranus = ephem.Uranus(today)
+    neptune = ephem.Neptune(today)
+    c_s = {'Mars': mars, 'Venus': venus, 'Mercury': mercury, 'Jupiter': jupiter,'Saturn':saturn,'Uranus':uranus, 'Neptune': neptune}
+    print (c_s)
+    print(today)
+    user_text = update.message.text.split()
+    phrase_count = len(user_text)
+    if phrase_count == 1:
+        update.message.reply_text('Введите название планеты')
+        print ('no planet')
+        return
+    user_text = user_text[phrase_count - 1].lower()
+    print(user_text)
+    if user_text not in p_s:
+        update.message.reply_text("Нет такой планеты в солнечной системе")
+    else:
+        planet = user_text.capitalize()
+        print(planet)
+        constelation = ephem.constellation(c_s[planet])
+        print(constelation)
+        update.message.reply_text(f'Выбрана планета {planet}, на {today} находится в {constelation}')
+
 def main():
     mybot = Updater(settings.API_KEY, use_context=True)
     dp = mybot.dispatcher   
     dp.add_handler(CommandHandler("start",greet_user))
     dp.add_handler(CommandHandler("time",tell_the_time))
     dp.add_handler(CommandHandler('exit', stopping))
+    dp.add_handler(CommandHandler("planet", astro_bot))
     dp.add_handler(MessageHandler(Filters.text, talk_to_me))
     logging.info("Бот стратовал")
     mybot.start_polling()
