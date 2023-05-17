@@ -49,6 +49,7 @@ def astro_bot(update, context):
             planet_request = 1
             return
     constellation = c_s.get(user_text, None)
+    constellation = ephem.constellation(constellation)
     planet_request = 0
     if constellation == None:
         update.message.reply_text("Нет такой планеты в солнечной системе")
