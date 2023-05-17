@@ -10,7 +10,6 @@ logging.basicConfig(filename='bot.log', level=logging.INFO)
 
 def greet_user(update, context):
     user_name = update.message.from_user.username
-    print(f'{user_name} вызвал /start')
     update.message.reply_text(f'Привет, {user_name} ! Ты вызвал команду /start')
 
 def tell_the_time(update, context):    
@@ -61,8 +60,6 @@ def talk_to_me(update, context):
     global planet_request
     user_text= update.message.text
     user_name = update.message.from_user.username
-    print(user_text)
-    print(user_name)
     if planet_request == 1:
         astro_bot(update, context)
     else:
