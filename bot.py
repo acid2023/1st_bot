@@ -36,7 +36,7 @@ def stopping(update, context):
 def astro_bot(update, context):
     global planet_request
     today = ephem.now()
-    c_s = {'mars':ephem.Mars(today) ,  'mercury':ephem.Mercury(today), 
+    c_s = {'mars':ephem.Mars(today),  'mercury':ephem.Mercury(today), 
            'venus':ephem.Venus(today), 'jupiter':ephem.Jupiter(today), 
            'saturn':ephem.Saturn(today), 'uranus':ephem.Uranus(today), 
            'neptune' : ephem.Neptune(today)}
