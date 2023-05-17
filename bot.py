@@ -4,19 +4,14 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from datetime import datetime
 import pytz, os, ephem
 
+planet_request = 0
+
 logging.basicConfig(filename='bot.log', level=logging.INFO)
 
 def greet_user(update, context):
     user_name = update.message.from_user.username
     print(f'{user_name} вызвал /start')
     update.message.reply_text(f'Привет, {user_name} ! Ты вызвал команду /start')
-
-def talk_to_me(update, context):
-    user_text= update.message.text
-    user_name = update.message.from_user.username
-    print(user_text)
-    print(user_name)
-    update.message.reply_text(user_name + ' написал: ' + user_text )
 
 def tell_the_time(update, context):    
     _time = datetime.now()
@@ -39,34 +34,38 @@ def stopping(update, context):
     return stop_bot(update, context)
 
 def astro_bot(update, context):
+    global planet_request
     today = ephem.now()
-    p_s = ['mars' , 'earth', 'mercury', 'venus', 'jupiter', 'saturn', 'uranus', 'neptune']
-    mars = ephem.Mars(today)
-    venus = ephem.Venus(today)
-    jupiter = ephem.Jupiter(today)
-    mercury = ephem.Mercury(today)
-    saturn = ephem.Saturn(today)
-    uranus = ephem.Uranus(today)
-    neptune = ephem.Neptune(today)
-    c_s = {'Mars': mars, 'Venus': venus, 'Mercury': mercury, 'Jupiter': jupiter,'Saturn':saturn,'Uranus':uranus, 'Neptune': neptune}
-    print (c_s)
-    print(today)
+    c_s = {'mars':ephem.Mars(today) ,  'mercury':ephem.Mercury(today), 
+           'venus':ephem.Venus(today), 'jupiter':ephem.Jupiter(today), 
+           'saturn':ephem.Saturn(today), 'uranus':ephem.Uranus(today), 
+           'neptune' : ephem.Neptune(today)}
     user_text = update.message.text.split()
     phrase_count = len(user_text)
-    if phrase_count == 1:
-        update.message.reply_text('Введите название планеты')
-        print ('no planet')
-        return
     user_text = user_text[phrase_count - 1].lower()
-    print(user_text)
-    if user_text not in p_s:
+    if planet_request == 0:
+        if phrase_count == 1:
+            update.message.reply_text('Введите название планеты')
+            planet_request = 1
+            return
+    constellation = c_s.get(user_text, None)
+    planet_request = 0
+    if constellation == None:
         update.message.reply_text("Нет такой планеты в солнечной системе")
     else:
         planet = user_text.capitalize()
-        print(planet)
-        constelation = ephem.constellation(c_s[planet])
-        print(constelation)
-        update.message.reply_text(f'Выбрана планета {planet}, на {today} находится в {constelation}')
+        update.message.reply_text(f'Выбрана планета {planet}, на {today} находится в {constellation}')
+
+def talk_to_me(update, context):
+    global planet_request
+    user_text= update.message.text
+    user_name = update.message.from_user.username
+    print(user_text)
+    print(user_name)
+    if planet_request == 1:
+        astro_bot(update, context)
+    else:
+        update.message.reply_text(user_name + ' написал: ' + user_text )
 
 def main():
     mybot = Updater(settings.API_KEY, use_context=True)
