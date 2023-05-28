@@ -1,4 +1,6 @@
 settings.py
+test.py
 *.log
 .vscode
 __pycache__
+.DS_Store

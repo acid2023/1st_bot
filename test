@@ -1,0 +1,17 @@
+
+import csv
+def get_cities_list_from_csv():
+    results = []
+    with open('city.csv', encoding='cp1251') as f:
+        reader = csv.reader(f)
+        next(reader)
+        for row in reader:
+            results.append(row[0].split(';')[3][1:-1])
+        return results
+
+list_cities = get_cities_list_from_csv()
+
+pattern = r' *[-]?\d*[.]?\d* *[+/*]? *[-]?\d*[.]?\d* *'
+import re
+str = '+.5/-.3'
+print(re.fullmatch(pattern, str))

@@ -1,3 +1,4 @@
+import re
 def execute_calculation(a_b_list, operator):
     try:
         if operator == '+':
@@ -114,18 +115,9 @@ def two_arguements_check(string):
 
 def calc_arguement_check(string):
     string = remove_first_and_last_spaces(string)
-    if not char_check(string):
-        return 'arguement shall be numbers and operators "+", "-", "*" or "/"'
-    elif not no_operator_check(string):
-        return 'there should be one operator'
-    elif not wrong_operator_position(string):
-        return 'operator should be between numbers'
-    elif not one_operator_only(string):
-        return 'only one operator is accepted'
-    elif not no_spaces_between_numbers(string):
-        return 'no spaces between only numbers'
-    elif not two_arguements_check(string):
-        return 'calculator can work with only two arguements'
+    sample = r' *[-]?\d*[.]?\d* *[+/*]? *[-]?\d*[.]?\d* *'
+    if re.fullmatch(sample, string) is None:
+        return 'wrong arguements'
     else:
         return 'ok'
 
